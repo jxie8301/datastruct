@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -30,7 +31,10 @@ bool InitDuLinkList(DuLinkList *list)
 {
     *list = (DuLnode *)malloc(sizeof(DuLnode));
     if (*list == NULL)
+    {
+        perror("内存分配失败");
         return false;
+    }
 
     (*list)->prev = NULL;
     (*list)->next = NULL;
@@ -56,16 +60,19 @@ void CreateDuLinkList_H(DuLinkList *list)
             return;
 
         DuLnode *node = (DuLnode *)malloc(sizeof(DuLnode));
-
+        if (node == NULL)
+        {
+            perror("内存分配失败");
+            return;
+        }
         node->data = input;
         node->prev = current;
         node->next = current->next;
 
         current->next = node;
 
-        if (current->next != NULL)
-            current->next->prev = node;
-
+        if (node->next != NULL)
+            node->next->prev = node;
     } while (1);
 }
 
@@ -80,12 +87,6 @@ void CreateDuLinkList_T(DuLinkList *list)
 
     endNode = (DuLnode *)*list; // 将最后的节点设置为第一个节点
 
-    // 将节点移动至最后一个节点
-    while (endNode->next != NULL)
-    {
-        endNode = endNode->next;
-    }
-
     do
     {
         printf("请输入插入的值，-1结束\n");
@@ -94,6 +95,11 @@ void CreateDuLinkList_T(DuLinkList *list)
         if (input == -1)
             return;
         currNode = (DuLnode *)malloc(sizeof(DuLnode));
+        if (currNode == NULL)
+        {
+            perror("内存分配失败");
+            return;
+        }
         currNode->data = input;   // 设置节点的值
         currNode->next = NULL;    // 将当前节点的下一个节点设置为NULL
         currNode->prev = endNode; // 将当前节点的上一个点设置这最后一个节点
@@ -114,7 +120,6 @@ bool ListInsert(DuLinkList *list, int index, ElemType e)
         printf("非法的插入位置：%d\n", index);
         return false;
     }
-
     DuLnode *currNode = *list; // 插入点的节点,默认为头节点
     int j = 0;
     while (currNode != NULL && j < index - 1)
@@ -122,7 +127,6 @@ bool ListInsert(DuLinkList *list, int index, ElemType e)
         currNode = currNode->next;
         j++;
     }
-
     if (currNode == NULL)
     {
         printf("非法的插入位置：%d\n", index);
@@ -140,7 +144,6 @@ bool ListInsert(DuLinkList *list, int index, ElemType e)
     node->prev = currNode;       // 设置新节点的上一个节点
     node->next = currNode->next; // 设置新节点的下一个节点
 
-    // 如果不是末尾节点，调整后一个节点的上一节点位置
     if (currNode->next != NULL)
         currNode->next->prev = node;
 
@@ -149,16 +152,76 @@ bool ListInsert(DuLinkList *list, int index, ElemType e)
     return true;
 }
 
+// 删除指定位置的节点
+bool ListDelete(DuLinkList *list, int index)
+{
+    if ((*list) == NULL || index < 1)
+    {
+        printf("非法的删除位置 %d\n", index);
+        return false;
+    }
+
+    DuLnode *delNode = *list;
+    int i = 0; // 删除节点的位置索引
+    while (delNode->next != NULL && i < index - 1)
+    {
+        delNode = delNode->next;
+        i++;
+    }
+
+    DuLnode *nodeToDelete = delNode->next;
+
+    // 如果删除位置超出链表长度
+    if (nodeToDelete == NULL)
+    {
+        printf("非法的删除位置：%d\n", index);
+        return false;
+    }
+
+    // 调整指针
+    if (nodeToDelete->next != NULL) // 确保 delNode 不是最后一个节点
+    {
+        nodeToDelete->next->prev = delNode; // 将删除节点下一节点的上一节点设置为删除节点的上一节点
+    }
+
+    delNode->next = nodeToDelete->next; // 将删除节点上一节点的下一节点设置为删除节点的下一节点
+
+    free(nodeToDelete);
+
+    return true;
+}
+void DestroyDuLinkList(DuLinkList *list)
+{
+    if (list == NULL || *list == NULL)
+    {
+        return;
+    }
+
+    DuLnode *current = (*list)->next;
+    while (current != NULL)
+    {
+        DuLnode *temp = current;
+        current = current->next;
+        free(temp);
+    }
+    free(*list);
+    *list = NULL;
+}
+
 int main(void)
 {
     printf("Hello world!\n");
     DuLinkList list = NULL;
-    // CreateDuLinkList_H(&list);'
-    CreateDuLinkList_T(&list);
+    // CreateDuLinkList_H(&list);
+    // CreateDuLinkList_T(&list);
 
     ElemType e = 555;
     ListInsert(&list, 4, e);
-
     printList(list);
+
+    // ListDelete(&list, 4);
+    // printList(list);
+
+    // DestroyDuLinkList(&list);
     return 0;
 }
