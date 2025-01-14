@@ -6,3 +6,14 @@
 注意：
 必须在原地操作，不能复制数组。尽量减少操作的总次数。
 */
+#include <stdio.h>
+#include <stdlib.h>
+
+void moveZeroes(int* nums, int numSize){
+    
+}
+
+int main(void){
+
+    return 0;
+}
