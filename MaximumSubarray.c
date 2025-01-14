@@ -13,7 +13,25 @@
 #include <stdlib.h>
 
 /*
-使用了双重循环来检查所有可能的子数组,时间复杂度是 O(n^2)
+使用了双重循环来检查所有可能的子数组,时间复杂度是 O(n^2)，是使用暴力枚举法来求解最大子数组和问题。其核心思想是枚举所有可能的子数组，计算每个子数组的和，并找到其中的最大值。
+1. 初始化
+    定义一个变量 maxSubSum，用于存储全局的最大子数组和。
+    将 maxSubSum 初始化为数组的第一个元素 nums[0]。
+
+2. 枚举所有子数组
+    使用双重循环枚举所有可能的子数组：
+    外层循环：从 i = 0 到 i = numsSize - 1，表示子数组的起始位置。
+    内层循环：从 j = i 到 j = numsSize - 1，表示子数组的结束位置。
+    对于每个子数组 nums[i..j]，计算其和 maxSum。
+
+3. 计算子数组和
+    在内层循环中，初始化 maxSum = 0。
+    从 i 到 j 遍历子数组的元素，累加每个元素到 maxSum 中。
+    在每次累加后，检查是否需要更新 maxSubSum：
+    如果 maxSum > maxSubSum，则更新 maxSubSum = maxSum。
+
+4. 返回结果
+    遍历结束后，maxSubSum 就是整个数组中最大子数组的和。
 */
 int maxSubArray1(int *nums, int numsSize){
     int maxSubSum = nums[0];
